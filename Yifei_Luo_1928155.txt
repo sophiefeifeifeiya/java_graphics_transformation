@@ -1,0 +1,262 @@
+CPT105 2020 CW3 Part C_2
+------------------------------------------------------------------------------------
+
+Name       : Yifei Luo
+Student ID : 1928155
+
+------------------------------------------------------------------------------------
+
+Copy paste ALL the content of your CW3_Part_B.java below the line ==================
+
+In particular, it contains and must match the two methods that you submit in Part B.
+
+====================================================================================
+ private static Picture wave(Picture picture) {
+        Picture output = new Picture(picture.width(), picture.height());
+        int width = picture.width();
+        int height = picture.height();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int ii = i;
+                int jj = (int) (j + 40 * Math.sin(i / 3.5 * Math.PI / 64));
+                if (jj >= 0 && jj < height) {
+                    output.setColor(i, j, picture.getColor(ii, jj));
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private static Picture scale(Picture picture, int width, int height) {
+
+        Picture output = new Picture(width, height);
+
+        for (int i = 0; i < output.width(); i++) {
+            for (int j = 0; j < output.height(); j++) {
+                output.setColor(i, j, picture.getColor(i * picture.width() / width, j * picture.height() / height));
+            }
+        }
+
+        return output;
+    }
+
+    private static Picture tilt(Picture picture, double angle) {
+        Picture output = new Picture(picture.width(), picture.height());
+        double centerCol = 0.5 * (picture.width() - 1);
+        double centerRow = 0.5 * (picture.height() - 1);
+        int ii;
+        int jj;
+        for (int i = 0; i < picture.width(); i++) {
+            for (int j = 0; j < picture.height(); j++) {
+                ii = (int) ((i - centerCol) * Math.cos(Math.toRadians(angle))
+                        - (j - centerRow) * Math.sin(Math.toRadians(angle)) + centerCol);
+                jj = (int) ((i - centerCol) * Math.sin(Math.toRadians(angle))
+                        + (j - centerRow) * Math.cos(Math.toRadians(angle)) + centerRow);
+                if (ii < picture.width() && ii >= 0
+                        && jj < picture.height() && jj >= 0) {
+                    output.setColor(i, j, picture.getColor(ii, jj));
+
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private static Picture swirl(Picture picture) {
+        Picture output = new Picture(picture.width(), picture.height());
+        double centerCol = 0.5 * (picture.width() - 1);
+        double centerRow = 0.5 * (picture.height() - 1);
+        int ii;
+        int jj;
+        for (int i = 0; i < picture.width(); i++) {
+            for (int j = 0; j < picture.height(); j++) {
+                double angle = Math.PI / 20
+                        * Math.sqrt((i - centerCol) * (i - centerCol) + (j - centerRow) * (j - centerRow));
+                ii = (int) ((i - centerCol) * Math.cos(angle)
+                        - (j - centerRow) * Math.sin(angle) + centerCol);
+                jj = (int) ((i - centerCol) * Math.sin(angle)
+                        + (j - centerRow) * Math.cos(angle) + centerRow);
+                if (ii < picture.width() && ii >= 0
+                        && jj < picture.height() && jj >= 0) {
+                    output.setColor(i, j, picture.getColor(ii, jj));
+
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private static Picture placePicture(Picture picture) {
+        Picture output = new Picture(picture.width() * 2, picture.height() * 2);
+        for (int i = 0; i < output.width(); i++) {
+            for (int j = 0; j < output.height(); j++) {
+                output.setColor(i, j, Color.BLACK);
+            }
+        }
+
+        Picture p1 = scale(picture, picture.width() / 3 * 2, picture.height() / 3 * 2);
+        p1 = swirl(p1);
+        Picture p2 = scale(picture, picture.width() / 3 * 2, picture.height() / 3 * 2);
+        p2 = swirl(p2);
+        Picture p3 = scale(picture, picture.width() * 3 / 2, picture.height() / 3);
+        p3 = tilt(wave(p3), 180);
+
+        for (int i = 0; i < p1.width(); i++) {
+            for (int j = 0; j < p1.height(); j++) {
+                output.setColor(i + picture.width() / 6, j + picture.height() / 6, p1.getColor(i, j));
+            }
+        }
+
+        for (int i = 0; i < p2.width(); i++) {
+            for (int j = 0; j < p2.height(); j++) {
+                output.setColor(i + picture.width() + picture.width() / 6, j + picture.height() / 6, p2.getColor(i, j));
+            }
+        }
+        for (int i = 0; i < p3.width(); i++) {
+            for (int j = 0; j < p3.height(); j++) {
+                output.setColor(i + picture.width() / 4, j + picture.height() + picture.height() / 4, p3.getColor(i, j));
+            }
+        }
+        for (int i = 0; i < output.width(); i++) {
+            for (int j = 0; j < output.height(); j++) {
+
+                if (output.getColor(i, j).getRGB() != -16777216) {
+
+                    output.setColor(i, j, output.getColor(i, j));
+                } else {
+                    output.setColor(i, j, Color.white);
+//                  
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private static Picture finalPic(Picture p1, Picture p2) {
+        if (p1.height() > p2.height()) {
+            Picture finalPic = new Picture(p1.width() + p2.width(), p1.height());
+            for (int i = 0; i < p1.width(); i++) {
+                for (int j = 0; j < p1.height(); j++) {
+                    finalPic.setColor(i, j, p1.getColor(i, j));
+                    finalPic.setColor(i + p1.width(), j, p2.getColor(i, j));
+                }
+            }
+            return finalPic;
+        } else {
+            Picture finalPic = new Picture(p1.width() + p2.width(), p2.height());
+            for (int i = 0; i < p1.width(); i++) {
+                for (int j = 0; j < p1.height(); j++) {
+                    finalPic.setColor(i, j, p1.getColor(i, j));
+
+                }
+            }
+            for (int i = 0; i < p2.width(); i++) {
+                for (int j = 0; j < p2.height(); j++) {
+                    finalPic.setColor(i + p1.width(), j, p2.getColor(i, j));
+                }
+            }
+            return finalPic;
+        }
+
+    }
+
+    public static Picture positionalTransform(Picture picture) {
+        Picture output = picture;
+        output = placePicture(output);
+        return finalPic(picture, output);
+
+    }
+
+    /**
+     * **************
+     * CW3 Part B.2 *
+     ***************
+     */
+    // Original picture and color tranformed picture.
+    private static int filter(int[] arr) {
+        // TODO Auto-generated method stub
+        int res = arr[12] - arr[24] + 128;
+        return res;
+    }
+
+    private static Picture anaglyph(Picture picture, int[] near1, int[] near2) {
+        Picture output = new Picture(picture.width(), picture.height());
+        for (int y = 0; y < picture.height(); y++) {
+            for (int x = 0; x < picture.width(); x++) {
+                //卷积核，
+                int R, G, B;
+                int[] R1 = new int[near1.length];
+                int[] G1 = new int[near1.length];
+                int[] B1 = new int[near1.length];
+                for (int current = 0; current < near1.length; current++) {
+                    int k1 = near1[current], k2 = near2[current];
+                    Color color = picture.getColor((x + k1 + picture.width()) % picture.width(),
+                            (y + k2 + picture.height()) % picture.height());
+
+                    //System.out.print(core[current]);
+                    R1[current] = (int) color.getRed();
+                    G1[current] = (int) color.getGreen();
+                    B1[current] = (int) color.getBlue();
+                }
+                R = filter(R1);
+                if (R > 255) {
+                    R = 255;
+                }
+                if (R < 0) {
+                    R = 0;
+                }
+                G = filter(G1);
+                if (G > 255) {
+                    G = 255;
+                }
+                if (G < 0) {
+                    G = 0;
+                }
+                B = filter(B1);
+                if (B > 255) {
+                    B = 255;
+                }
+                if (B < 0) {
+                    B = 0;
+                }
+                output.setColor(x, y, new Color(R, G, B));
+            }
+        }
+        return output;
+    }
+
+  
+
+    public static Picture colorTransform(Picture picture) {
+        Picture output = new Picture(picture.width(), picture.height());
+        int[] near1 = new int[5 * 5];
+        int[] near2 = new int[5 * 5];
+        int cur = 0;
+        for (int i = -2; i < 3; i++) {
+            for (int j = -2; j < 3; j++) {
+                near1[cur] = j;
+                near2[cur] = i;
+                cur++;
+
+            }
+        }
+
+        output = anaglyph(picture, near1, near2);
+        return finalPic(picture, output);
+    }
+
+    public static void main(String[] args) {
+        Picture andrew = new Picture("src\\cw3\\Andrew.png");
+//        andrew.show();
+
+        positionalTransform(andrew).show();
+        colorTransform(andrew).show();
+    }
+
+
+
+
